@@ -12,7 +12,7 @@
     $username = "root";
     $password = "";
     $dbname = "music";
-    $servername = "localhost";
+    $servername = "192.168.6.112";
 
     $conn = new mysqli($servername, $username, $password, $dbname);
 
