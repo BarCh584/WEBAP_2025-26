@@ -1,0 +1,175 @@
+3. Basic syntax
+$.get()
+$.get(url, data, successCallback);
+
+$.post()
+$.post(url, data, successCallback);
+
+
+Where:
+
+url → server endpoint
+
+data → object sent to the server
+
+successCallback → function that runs when the server responds successfully
+
+4. Simple $.get() example
+JavaScript
+$.get("getUser.php", { id: 5 }, function(response) {
+    console.log(response);
+});
+
+What happens step by step
+
+Browser sends an HTTP request:
+
+GET /getUser.php?id=5
+
+
+Server processes the request
+
+Server sends back data (e.g. JSON or text)
+
+response contains the returned data
+
+Callback function runs without reloading the page
+
+5. Simple $.post() example
+JavaScript
+$.post("saveUser.php", {
+    name: "Alice",
+    age: 25
+}, function(response) {
+    console.log(response);
+});
+
+What happens step by step
+
+Browser sends an HTTP request:
+
+POST /saveUser.php
+Content-Type: application/x-www-form-urlencoded
+
+name=Alice&age=25
+
+
+Server reads the POST data
+
+Server responds
+
+Callback runs with the server response
+
+6. Typical real-world example (form submit)
+HTML
+<form id="loginForm">
+    <input type="text" name="username">
+    <input type="password" name="password">
+    <button type="submit">Login</button>
+</form>
+
+JavaScript (AJAX submit)
+$("#loginForm").submit(function(e) {
+    e.preventDefault(); // stop page reload
+
+    $.post("login.php", $(this).serialize(), function(response) {
+        $("#result").html(response);
+    });
+});
+
+What’s happening
+
+e.preventDefault() stops the normal form submit
+
+serialize() turns form fields into:
+
+username=john&password=1234
+
+
+AJAX sends data
+
+Server responds
+
+Page updates dynamically
+
+7. Handling JSON responses (very common)
+JavaScript
+$.get("users.php", function(data) {
+    console.log(data.name);
+}, "json");
+
+
+OR
+
+$.getJSON("users.php", function(data) {
+    console.log(data.name);
+});
+
+Server response (example)
+{
+  "name": "Alice",
+  "age": 25
+}
+
+
+jQuery automatically parses JSON into a JavaScript object.
+
+8. Error handling
+$.get("data.php")
+    .done(function(data) {
+        console.log("Success:", data);
+    })
+    .fail(function() {
+        console.log("Error occurred");
+    });
+
+9. Behind the scenes (important concept)
+
+Even though you write:
+
+$.get(...)
+
+
+jQuery is actually doing:
+
+$.ajax({
+    type: "GET",
+    url: "...",
+    data: {...},
+    success: function() {...}
+});
+
+
+So:
+
+$.get() = shorthand for GET
+
+$.post() = shorthand for POST
+
+10. When to use GET vs POST
+
+Use GET when:
+
+You’re retrieving data
+
+Data is small
+
+No sensitive information
+
+Use POST when:
+
+Sending form data
+
+Updating data
+
+Sending sensitive info
+
+If you want, I can:
+
+Walk through a complete frontend + backend example
+
+Compare AJAX vs fetch()
+
+Explain what happens in PHP / Node / backend side
+
+Just tell me 👍
