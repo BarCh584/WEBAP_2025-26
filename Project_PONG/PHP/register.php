@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <form method="POST" action="game.php">
+    <form method="POST">
         <input type="text" name="username" placeholder="Enter your username" required><br>
         <input type="password" name="password" placeholder="Enter your password" required><br>
         <input type="password" name="confirm_password" placeholder="Confirm your password" required><br>
@@ -49,9 +49,9 @@
                 echo "<p style='color:red;'>Username can only contain letters, numbers, and underscores. Please try again.</p>";
                 exit();
             }
-            $insert_sql = "INSERT INTO users (username, password) VALUES (?,?)";
-            $stmt = $conn->prepare($insert_sql);
-            $stmt->bind_param("ss", $username, $password);
+            $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?,?)");
+            $stmt->bind_param("ss", $username, $hashedpassword);
             if($stmt->execute()) {
                 echo "<p style='color:green;'>Registration successful! You can now <a href='index.php'>login</a>.</p>";
             } else {

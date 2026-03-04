@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <form method="POST" action="game.php">
+    <form method="POST">
         <input type="text" name="username" placeholder="Enter your username" required><br>
         <input type="password" name="password" placeholder="Enter your password" required><br>
         <input type="submit" value="Login & Play">
@@ -35,15 +35,21 @@
         if($_SERVER["REQUEST_METHOD"] == "POST") {
             $username = $_POST["username"];
             $password = $_POST["password"];
-
-            $sql = "SELECT * FROM users WHERE username='$username' AND password='$password'";
-            $result = $conn->query($sql);
+            $stmt = $conn->prepare("SELECT * FROM users WHERE username= ?");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
             if($result->num_rows > 0) {
-                header("Location: game.php");
-                exit();
+                $user = $result->fetch_assoc();
+                if(password_verify($password, $user['password'])) {
+                    header("Location: game.php");
+                } else {
+                    echo "<p style='color:red;'>Invalid username or password. Please try again.</p>";
+                }
             } else {
                 echo "<p style='color:red;'>Invalid username or password. Please try again.</p>";
+                exit();
             }
         }
     ?>
