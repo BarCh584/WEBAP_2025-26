@@ -1,7 +1,5 @@
 <?php
-
-$gameId = uniqid();
-
+$gameId = random_int(100000, 999999);
 $state = [
     "ballX"=>600,
     "ballY"=>300,
@@ -13,7 +11,5 @@ $state = [
     "score2"=>0,
     "player2Joined"=>false
 ];
-
 file_put_contents("../games/$gameId.json", json_encode($state));
-
 echo json_encode(["gameId"=>$gameId]);
