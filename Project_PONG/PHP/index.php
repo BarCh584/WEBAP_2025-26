@@ -43,6 +43,8 @@
             if($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
                 if(password_verify($password, $user['password'])) {
+                    $_SESSION['username'] = $username; // Store username in session
+                    $_SESSION['id'] = $user['id']; // Store user ID in session
                     header("Location: game.php");
                 } else {
                     echo "<p style='color:red;'>Invalid username or password. Please try again.</p>";

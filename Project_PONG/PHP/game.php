@@ -15,15 +15,28 @@
 
 <body>
     <div>
-        <input type="text" id="goalInput" placeholder="Goal number (Default=10)">
-        <input type="text" id="ballSpeedInput" placeholder="Ball speed (Default=5)">
-        <input type="text" id="paddleSpeedInput" placeholder="Paddle speed (Default=5)">
-    <button onclick="createGame()">Create Game</button>
-    <div id="gameidinf"></div>
+        <h3>Host a game - game Settings</h3>
+        <label for="goalInput">Goal number (Default=10):</label>
+        <input type="text" id="goalInput" placeholder="Goal number" value="10"><br>
+        <label for="ballSpeedInputX">Start Ball speed X (Default=600):</label>
+        <input type="text" id="ballSpeedInputX" placeholder="Start Ball speed X" value="600"><br>
+        <label for="ballSpeedInputY">Start Ball speed Y (Default=300):</label>
+        <input type="text" id="ballSpeedInputY" placeholder="Start Ball speed Y" value="300"><br>
+        <label for="paddleSpeedInput1">Paddle speed P1 (Default=250):</label>
+        <input type="text" id="paddleSpeedInput1" placeholder="Paddle speed P1" value="250"><br>
+        <label for="paddleSpeedInput2">Paddle speed P2 (Default=250):</label>
+        <input type="text" id="paddleSpeedInput2" placeholder="Paddle speed P2" value="250"><br>
+        <label for="startgoalscore1">Starting Score P1 (Default=0):</label>
+        <input type="text" id="startgoalscore1" placeholder="Starting Score P1" value="0"><br>
+        <label for="startgoalscore2">Starting Score P2 (Default=0):</label>
+        <input type="text" id="startgoalscore2" placeholder="Starting Score P2" value="0"><br>
+        <button onclick="createGame()">Create Game</button>
+        <div id="gameidinf">Game ID: </div>
     </div><br><br>
     <div>
-    <input type="text" id="gameIdInput" placeholder="Enter Game ID to Join">
-    <button onclick="joinGame()">Join Game</button>
+        <h3>Join a game</h3>
+        <input type="text" id="gameIdInput" placeholder="Enter Game ID to Join">
+        <button onclick="joinGame()">Join Game</button>
     </div>
     <br><br>
     <canvas id="canvas" width="1200" height="600"></canvas>
@@ -32,35 +45,45 @@
         let ctx = canvas.getContext("2d");
         let gameId = null;
         let playerNumber = null;
-        let ballX = 600;
-        let ballY = 300;
-        let p1Y = 250;
-        let p2Y = 250;
-        let score1 = 0;
-        let score2 = 0;
         const paddleHeight = 100;
         const paddleWidth = 10;
         const ballSize = 10;
 
         function createGame() {
-            fetch("create_game.php").then(res => res.json()).then(data => {
-                    gameId = data.gameId;
-                    playerNumber = 1;
-                    document.getElementById("gameidinf").innerText = "Game Created. ID: " + gameId;
-                    update();
-                });
+            let data = {
+                goal: document.getElementById("goalInput").value ?? 10,
+                ballSpeedX: document.getElementById("ballSpeedInputX").value ?? 600,
+                ballSpeedY: document.getElementById("ballSpeedInputY").value ?? 300,
+                paddleSpeed1: document.getElementById("paddleSpeedInput1").value ?? 250,
+                paddleSpeed2: document.getElementById("paddleSpeedInput2").value ?? 250,
+                startScore1: document.getElementById("startgoalscore1").value ?? 0,
+                startScore2: document.getElementById("startgoalscore2").value ?? 0
+            }
+            fetch("create_game.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json()).then(data => {
+                gameId = data.gameId;
+                playerNumber = 1;
+                document.getElementById("gameidinf").innerText = "Game Created. ID: " + gameId;
+                update();
+            });
         }
         function joinGame() {
-            let id = prompt("Enter Game ID:");
+            let id = document.getElementById("gameIdInput").value;
             fetch("join_game.php?gameId=" + id).then(res => res.json()).then(data => {
-                    if (data.status == "ok") {
-                        gameId = id;
-                        playerNumber = 2;
-                        update();
-                    } else {
-                        alert("Unable to join.");
-                    }
-                });
+                if (data.status == "ok") {
+                    gameId = id;
+                    playerNumber = 2;
+                    update();
+                } else {
+                    alert("Unable to join.");
+                }
+            });
         }
         document.addEventListener("keydown", function(e) {
             if (!gameId) return;
@@ -78,20 +101,25 @@
                     "&direction=" + direction
             });
         }
+
         function update() {
             setInterval(fetchState, 30); // 30ms around 33 FPS
         }
+
         function fetchState() {
             fetch("get_state.php?gameId=" + gameId).then(res => res.json()).then(data => {
                 ballX = data.ballX;
                 ballY = data.ballY;
                 p1Y = data.p1Y;
                 p2Y = data.p2Y;
+                p1N = data.p1N;
+                p2N = data.p2N;
                 score1 = data.score1;
                 score2 = data.score2;
                 draw();
             });
         }
+
         function draw() {
             // Draw basic game state: paddles, ball, scores
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -100,8 +128,8 @@
             ctx.fillRect(canvas.width - 20, p2Y, paddleWidth, paddleHeight);
             ctx.fillRect(ballX, ballY, ballSize, ballSize);
             ctx.font = "20px Arial";
-            ctx.fillText("P1: " + score1, 200, 30);
-            ctx.fillText("P2: " + score2, 900, 30);
+            ctx.fillText(p1N + ": " + score1, 200, 30);
+            ctx.fillText(p2N + ": " + score2, 900, 30);
         }
     </script>
 </body>
