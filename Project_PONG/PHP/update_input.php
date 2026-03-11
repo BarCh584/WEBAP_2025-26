@@ -7,11 +7,11 @@ $direction = $_POST["direction"];
 $file = "../games/$gameId.json";
 if(!file_exists($file)) exit;
 
-$fp = fopen($file, "c+");
+$fp = fopen($file, "c+"); // c+ means read/write, create if not exists, and do not truncate meaning don't shrink it
 flock($fp, LOCK_EX);
 
-rewind($fp);
-$state = json_decode(stream_get_contents($fp), true);
+rewind($fp); // move pointer to the beginning before reading/writing
+$state = json_decode(stream_get_contents($fp), true); // stream_get_contents reads from the current pointer position to the end of the file, so we need to rewind first to get the whole content.
 if(!$state) $state = [];
 
 $moveSpeed = 20;
@@ -37,6 +37,5 @@ ftruncate($fp, 0);
 rewind($fp);
 fwrite($fp, json_encode($state));
 fflush($fp);
-
 flock($fp, LOCK_UN);
 fclose($fp);

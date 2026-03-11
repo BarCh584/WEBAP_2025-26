@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 
@@ -18,10 +21,6 @@
         <h3>Host a game - game Settings</h3>
         <label for="goalInput">Goal number (Default=10):</label>
         <input type="text" id="goalInput" placeholder="Goal number" value="10"><br>
-        <label for="ballSpeedInputX">Start Ball speed X (Default=600):</label>
-        <input type="text" id="ballSpeedInputX" placeholder="Start Ball speed X" value="600"><br>
-        <label for="ballSpeedInputY">Start Ball speed Y (Default=300):</label>
-        <input type="text" id="ballSpeedInputY" placeholder="Start Ball speed Y" value="300"><br>
         <label for="paddleSpeedInput1">Paddle speed P1 (Default=250):</label>
         <input type="text" id="paddleSpeedInput1" placeholder="Paddle speed P1" value="250"><br>
         <label for="paddleSpeedInput2">Paddle speed P2 (Default=250):</label>
@@ -31,7 +30,7 @@
         <label for="startgoalscore2">Starting Score P2 (Default=0):</label>
         <input type="text" id="startgoalscore2" placeholder="Starting Score P2" value="0"><br>
         <button onclick="createGame()">Create Game</button>
-        <div id="gameidinf">Game ID: </div>
+        <div id="gameid">Game ID: </div>
     </div><br><br>
     <div>
         <h3>Join a game</h3>
@@ -48,31 +47,34 @@
         const paddleHeight = 100;
         const paddleWidth = 10;
         const ballSize = 10;
+        let upInterval = null;
+        let downInterval = null;
 
         function createGame() {
             let data = {
                 goal: document.getElementById("goalInput").value ?? 10,
-                ballSpeedX: document.getElementById("ballSpeedInputX").value ?? 600,
-                ballSpeedY: document.getElementById("ballSpeedInputY").value ?? 300,
+                ballSpeedX: 600,
+                ballSpeedY: 300,
                 paddleSpeed1: document.getElementById("paddleSpeedInput1").value ?? 250,
                 paddleSpeed2: document.getElementById("paddleSpeedInput2").value ?? 250,
                 startScore1: document.getElementById("startgoalscore1").value ?? 0,
                 startScore2: document.getElementById("startgoalscore2").value ?? 0
             }
             fetch("create_game.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json()).then(data => {
-                gameId = data.gameId;
-                playerNumber = 1;
-                document.getElementById("gameidinf").innerText = "Game Created. ID: " + gameId;
-                update();
-            });
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(res => res.json()).then(data => {
+                    gameId = data.gameId;
+                    playerNumber = 1;
+                    document.getElementById("gameid").innerText = "Game Created. ID: " + gameId;
+                    update();
+                });
         }
+
         function joinGame() {
             let id = document.getElementById("gameIdInput").value;
             fetch("join_game.php?gameId=" + id).then(res => res.json()).then(data => {
@@ -87,9 +89,34 @@
         }
         document.addEventListener("keydown", function(e) {
             if (!gameId) return;
-            if (e.key == "w" || e.key == "ArrowUp") sendInput("up");
-            if (e.key == "s" || e.key == "ArrowDown") sendInput("down");
+
+            if (e.key === "w" || e.key === "ArrowUp") {
+                if (!upInterval) {
+                    sendInput("up");
+                    upInterval = setInterval(() => sendInput("up"), 50);
+                }
+            }
+
+            if (e.key === "s" || e.key === "ArrowDown") {
+                if (!downInterval) {
+                    sendInput("down");
+                    downInterval = setInterval(() => sendInput("down"), 50);
+                }
+            }
         });
+
+        document.addEventListener("keyup", function(e) {
+            if (e.key === "w" || e.key === "ArrowUp") {
+                clearInterval(upInterval);
+                upInterval = null;
+            }
+
+            if (e.key === "s" || e.key === "ArrowDown") {
+                clearInterval(downInterval);
+                downInterval = null;
+            }
+        });
+
         function sendInput(direction) {
             fetch("update_input.php", {
                 method: "POST",
@@ -130,6 +157,10 @@
             ctx.font = "20px Arial";
             ctx.fillText(p1N + ": " + score1, 200, 30);
             ctx.fillText(p2N + ": " + score2, 900, 30);
+            // create the middle dashed line like 1972 atari pong style
+            for (let i = 0; i < canvas.height; i += 30) {
+                ctx.fillRect(canvas.width / 2, i, 2, 20);
+            }
         }
     </script>
 </body>
