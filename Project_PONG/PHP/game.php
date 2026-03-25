@@ -6,6 +6,7 @@ session_start();
 
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../style.css?v=<?php echo time(); ?>">
     <title>Multiplayer Pong</title>
     <style>
         canvas {
@@ -17,24 +18,31 @@ session_start();
 </head>
 
 <body>
-    <div>
-        <h3>Host a game - game Settings</h3>
-        <label for="goalInput">Goal number (Default=10):</label>
-        <input type="text" id="goalInput" placeholder="Goal number" value="10"><br>
-        <label for="paddleSpeedInput1">Paddle speed P1 (Default=250):</label>
-        <input type="text" id="paddleSpeedInput1" placeholder="Paddle speed P1" value="250"><br>
-        <label for="paddleSpeedInput2">Paddle speed P2 (Default=250):</label>
-        <input type="text" id="paddleSpeedInput2" placeholder="Paddle speed P2" value="250"><br>
-        <label for="startgoalscore1">Starting Score P1 (Default=0):</label>
-        <input type="text" id="startgoalscore1" placeholder="Starting Score P1" value="0"><br>
-        <label for="startgoalscore2">Starting Score P2 (Default=0):</label>
-        <input type="text" id="startgoalscore2" placeholder="Starting Score P2" value="0"><br>
+    <div class="card" id="hostCard">
+        <h3>Host a Game</h3>
+
+        <label>Goal number</label>
+        <input type="text" id="goalInput" value="10">
+
+        <label>Paddle speed P1</label>
+        <input type="text" id="paddleSpeedInput1" value="250">
+
+        <label>Paddle speed P2</label>
+        <input type="text" id="paddleSpeedInput2" value="250">
+
+        <label>Starting Score P1</label>
+        <input type="text" id="startgoalscore1" value="0">
+
+        <label>Starting Score P2</label>
+        <input type="text" id="startgoalscore2" value="0">
+
         <button onclick="createGame()">Create Game</button>
-        <div id="gameid">Game ID: </div>
-    </div><br><br>
-    <div>
-        <h3>Join a game</h3>
-        <input type="text" id="gameIdInput" placeholder="Enter Game ID to Join">
+    </div>
+    <p id="gameid">Game ID: </p>
+    <div class="card" id="joinCard">
+        <h3>Join a Game</h3>
+
+        <input type="text" id="gameIdInput" placeholder="Enter Game ID">
         <button onclick="joinGame()">Join Game</button>
     </div>
     <br><br>
@@ -44,11 +52,20 @@ session_start();
         let ctx = canvas.getContext("2d");
         let gameId = null;
         let playerNumber = null;
+
         const paddleHeight = 100;
         const paddleWidth = 10;
         const ballSize = 10;
+
         let upInterval = null;
         let downInterval = null;
+        canvas.style.display = "none"; // hide canvas on load
+
+        function hideForms() {
+            document.getElementById("hostCard").style.display = "none";
+            document.getElementById("joinCard").style.display = "none";
+            canvas.style.display = "block"; // load canvas when game starts
+        }
 
         function createGame() {
             let data = {
@@ -59,7 +76,8 @@ session_start();
                 paddleSpeed2: document.getElementById("paddleSpeedInput2").value ?? 250,
                 startScore1: document.getElementById("startgoalscore1").value ?? 0,
                 startScore2: document.getElementById("startgoalscore2").value ?? 0
-            }
+            };
+
             fetch("create_game.php", {
                     method: "POST",
                     headers: {
@@ -67,26 +85,40 @@ session_start();
                     },
                     body: JSON.stringify(data)
                 })
-                .then(res => res.json()).then(data => {
+                .then(res => res.json())
+                .then(data => {
                     gameId = data.gameId;
                     playerNumber = 1;
-                    document.getElementById("gameid").innerText = "Game Created. ID: " + gameId;
+
+                    document.getElementById("gameid").innerText =
+                        "Game Created. ID: " + gameId;
+
+                    // small delay ensures UI updates before hiding
+                    setTimeout(hideForms, 100);
+
                     update();
                 });
         }
 
         function joinGame() {
             let id = document.getElementById("gameIdInput").value;
-            fetch("join_game.php?gameId=" + id).then(res => res.json()).then(data => {
-                if (data.status == "ok") {
-                    gameId = id;
-                    playerNumber = 2;
-                    update();
-                } else {
-                    alert("Unable to join.");
-                }
-            });
+
+            fetch("join_game.php?gameId=" + id)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status == "ok") {
+                        gameId = id;
+                        playerNumber = 2;
+                        document.getElementById("gameid").innerText = "Game Created. ID: " + gameId;
+                        hideForms(); // ✅ hide for joiner
+
+                        update();
+                    } else {
+                        alert("Unable to join.");
+                    }
+                });
         }
+
         document.addEventListener("keydown", function(e) {
             if (!gameId) return;
 
@@ -130,34 +162,43 @@ session_start();
         }
 
         function update() {
-            setInterval(fetchState, 30); // 30ms around 33 FPS
+            setInterval(fetchState, 30); // ~33 FPS
         }
 
         function fetchState() {
-            fetch("get_state.php?gameId=" + gameId).then(res => res.json()).then(data => {
-                ballX = data.ballX;
-                ballY = data.ballY;
-                p1Y = data.p1Y;
-                p2Y = data.p2Y;
-                p1N = data.p1N;
-                p2N = data.p2N;
-                score1 = data.score1;
-                score2 = data.score2;
-                draw();
-            });
+            fetch("get_state.php?gameId=" + gameId)
+                .then(res => res.json())
+                .then(data => {
+                    ballX = data.ballX;
+                    ballY = data.ballY;
+                    p1Y = data.p1Y;
+                    p2Y = data.p2Y;
+                    p1N = data.p1N;
+                    p2N = data.p2N;
+                    score1 = data.score1;
+                    score2 = data.score2;
+
+                    draw();
+                });
         }
 
         function draw() {
-            // Draw basic game state: paddles, ball, scores
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "white";
+
+            // paddles
             ctx.fillRect(10, p1Y, paddleWidth, paddleHeight);
             ctx.fillRect(canvas.width - 20, p2Y, paddleWidth, paddleHeight);
+
+            // ball
             ctx.fillRect(ballX, ballY, ballSize, ballSize);
+
+            // scores
             ctx.font = "20px Arial";
             ctx.fillText(p1N + ": " + score1, 200, 30);
             ctx.fillText(p2N + ": " + score2, 900, 30);
-            // create the middle dashed line like 1972 atari pong style
+
+            // middle dashed line
             for (let i = 0; i < canvas.height; i += 30) {
                 ctx.fillRect(canvas.width / 2, i, 2, 20);
             }

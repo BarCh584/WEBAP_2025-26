@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css?v=<?php echo time(); ?>">
     <title>Pong game</title>
     <style>
         canvas {
@@ -15,11 +16,15 @@
 </head>
 
 <body>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Enter your username" required><br>
-        <input type="password" name="password" placeholder="Enter your password" required><br>
+    <form method="POST" class="card">
+        <h3>Login</h3>
+
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+
         <input type="submit" value="Login & Play">
-        <p>Not yet registered? Create an account <a href="register.php">here</a></p>
+
+        <p>Not registered? <a href="register.php">Create account</a></p>
     </form>
     <?php
     session_start();
