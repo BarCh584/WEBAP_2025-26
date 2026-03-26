@@ -1,11 +1,18 @@
 <?php
 session_start();
+$gameId = $_GET["gameId"] ?? null;
+$playerNumber = $_GET["player"] ?? null;
+
+if (!$gameId || !$playerNumber) {
+    die("Invalid game.");
+}
 ?>
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../style.css">
     <title>Multiplayer Pong</title>
     <style>
         canvas {
@@ -17,86 +24,51 @@ session_start();
 </head>
 
 <body>
-    <div>
-        <h3>Host a game - game Settings</h3>
-        <label for="goalInput">Goal number (Default=10):</label>
-        <input type="text" id="goalInput" placeholder="Goal number" value="10"><br>
-        <label for="paddleSpeedInput1">Paddle speed P1 (Default=250):</label>
-        <input type="text" id="paddleSpeedInput1" placeholder="Paddle speed P1" value="250"><br>
-        <label for="paddleSpeedInput2">Paddle speed P2 (Default=250):</label>
-        <input type="text" id="paddleSpeedInput2" placeholder="Paddle speed P2" value="250"><br>
-        <label for="startgoalscore1">Starting Score P1 (Default=0):</label>
-        <input type="text" id="startgoalscore1" placeholder="Starting Score P1" value="0"><br>
-        <label for="startgoalscore2">Starting Score P2 (Default=0):</label>
-        <input type="text" id="startgoalscore2" placeholder="Starting Score P2" value="0"><br>
-        <button onclick="createGame()">Create Game</button>
-        <div id="gameid">Game ID: </div>
-    </div><br><br>
-    <div>
-        <h3>Join a game</h3>
-        <input type="text" id="gameIdInput" placeholder="Enter Game ID to Join">
-        <button onclick="joinGame()">Join Game</button>
+    <div class="menu-container">
+        <div class="panel">
+            <h3>Host a game - game Settings</h3>
+            <label for="goalInput">Goal number (Default=10):</label>
+            <input type="text" id="goalInput" placeholder="Goal number" value="10"><br>
+            <label for="paddleSpeedInput1">Paddle speed P1 (Default=250):</label>
+            <input type="text" id="paddleSpeedInput1" placeholder="Paddle speed P1" value="250"><br>
+            <label for="paddleSpeedInput2">Paddle speed P2 (Default=250):</label>
+            <input type="text" id="paddleSpeedInput2" placeholder="Paddle speed P2" value="250"><br>
+            <label for="startgoalscore1">Starting Score P1 (Default=0):</label>
+            <input type="text" id="startgoalscore1" placeholder="Starting Score P1" value="0"><br>
+            <label for="startgoalscore2">Starting Score P2 (Default=0):</label>
+            <input type="text" id="startgoalscore2" placeholder="Starting Score P2" value="0"><br>
+            <button onclick="createGame()">Create Game</button>
+            <div id="gameid">Game ID: <?= $_GET["gameId"] ?></div>
+        </div><br><br>
+        <div class="panel">
+            <h3>Join a game</h3>
+            <input type="text" id="gameIdInput" placeholder="Enter Game ID to Join">
+            <button onclick="joinGame()">Join Game</button>
+        </div>
     </div>
     <br><br>
     <canvas id="canvas" width="1200" height="600"></canvas>
     <script>
         let canvas = document.getElementById("canvas");
         let ctx = canvas.getContext("2d");
-        let gameId = null;
-        let playerNumber = null;
         const paddleHeight = 100;
         const paddleWidth = 10;
         const ballSize = 10;
         let upInterval = null;
         let downInterval = null;
+        let gameId = "<?php echo $gameId; ?>";
+        let playerNumber = "<?php echo $playerNumber; ?>";
 
-        function createGame() {
-            let data = {
-                goal: document.getElementById("goalInput").value ?? 10,
-                ballSpeedX: 600,
-                ballSpeedY: 300,
-                paddleSpeed1: document.getElementById("paddleSpeedInput1").value ?? 250,
-                paddleSpeed2: document.getElementById("paddleSpeedInput2").value ?? 250,
-                startScore1: document.getElementById("startgoalscore1").value ?? 0,
-                startScore2: document.getElementById("startgoalscore2").value ?? 0
-            }
-            fetch("create_game.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(res => res.json()).then(data => {
-                    gameId = data.gameId;
-                    playerNumber = 1;
-                    document.getElementById("gameid").innerText = "Game Created. ID: " + gameId;
-                    update();
-                });
-        }
+        update();
 
-        function joinGame() {
-            let id = document.getElementById("gameIdInput").value;
-            fetch("join_game.php?gameId=" + id).then(res => res.json()).then(data => {
-                if (data.status == "ok") {
-                    gameId = id;
-                    playerNumber = 2;
-                    update();
-                } else {
-                    alert("Unable to join.");
-                }
-            });
-        }
         document.addEventListener("keydown", function(e) {
             if (!gameId) return;
-
             if (e.key === "w" || e.key === "ArrowUp") {
                 if (!upInterval) {
                     sendInput("up");
                     upInterval = setInterval(() => sendInput("up"), 50);
                 }
             }
-
             if (e.key === "s" || e.key === "ArrowDown") {
                 if (!downInterval) {
                     sendInput("down");
@@ -104,13 +76,11 @@ session_start();
                 }
             }
         });
-
         document.addEventListener("keyup", function(e) {
             if (e.key === "w" || e.key === "ArrowUp") {
                 clearInterval(upInterval);
                 upInterval = null;
             }
-
             if (e.key === "s" || e.key === "ArrowDown") {
                 clearInterval(downInterval);
                 downInterval = null;

@@ -1,0 +1,88 @@
+    body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(135deg, #0f172a, #020617);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h3 {
+        margin-top: 0;
+        text-align: center;
+    }
+
+    .menu-container {
+        display: flex;
+        gap: 40px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .panel {
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid #1e293b;
+        padding: 25px;
+        border-radius: 12px;
+        width: 280px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.6);
+    }
+
+    label {
+        font-size: 13px;
+        color: #cbd5f5;
+        display: block;
+        margin-top: 10px;
+    }
+
+    input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        border-radius: 6px;
+        border: none;
+        background: #020617;
+        color: white;
+        border: 1px solid #334155;
+    }
+
+    input:focus {
+        outline: none;
+        border: 1px solid #38bdf8;
+        box-shadow: 0 0 6px #38bdf8;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 15px;
+        border-radius: 8px;
+        border: none;
+        background: #22c55e;
+        color: black;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #4ade80;
+        transform: scale(1.03);
+    }
+
+    #gameid {
+        margin-top: 12px;
+        font-size: 14px;
+        color: #38bdf8;
+        text-align: center;
+    }
+
+    canvas {
+        background: black;
+        display: block;
+        margin: 40px auto;
+        border: 3px solid #38bdf8;
+        box-shadow: 0 0 20px #38bdf8;
+    }

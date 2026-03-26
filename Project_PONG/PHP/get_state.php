@@ -1,5 +1,12 @@
 <?php
-
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "Ponggame";
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 $gameId = $_GET["gameId"];
 $file = "../games/$gameId.json";
 
@@ -50,6 +57,10 @@ if (
 // scoring
 if ($state["ballX"] < 0) {
     $state["score2"]++;
+    if ($state["score2"] >= $state["goal"]) {
+        echo "<script>alert('" . $state["p2N"] . " wins " . $state["score2"] . ":" . $state["score1"] . "');</script>";
+        return;
+    }
     $state["ballX"] = 600;
     $state["ballY"] = 300;
     $state["velX"] = (round(rand(1, 5)) < 3) ? -4 : 4; // randomize initial direction of the ball
@@ -58,6 +69,10 @@ if ($state["ballX"] < 0) {
 
 if ($state["ballX"] > 1200) {
     $state["score1"]++;
+    if ($state["score1"] >= $state["goal"]) {
+        echo "<script>alert('" . $state["p1N"] . " wins " . $state["score1"] . ":" . $state["score2"] . "');</script>";
+        return;
+    }
     $state["ballX"] = 600;
     $state["ballY"] = 300;
     $state["velX"] = (round(rand(1, 5)) < 3) ? -4 : 4; // randomize initial direction of the ball

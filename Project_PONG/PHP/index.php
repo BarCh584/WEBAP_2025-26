@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="../style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pong game</title>
@@ -15,12 +16,14 @@
 </head>
 
 <body>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Enter your username" required><br>
-        <input type="password" name="password" placeholder="Enter your password" required><br>
-        <input type="submit" value="Login & Play">
-        <p>Not yet registered? Create an account <a href="register.php">here</a></p>
-    </form>
+    <div class="menu-container">
+        <form method="POST" class="panel">
+            <input type="text" name="username" placeholder="Enter your username" required><br>
+            <input type="password" name="password" placeholder="Enter your password" required><br>
+            <input type="submit" value="Login & Play">
+            <p>Not yet registered? Create an account <a href="register.php">here</a></p>
+        </form>
+    </div>
     <?php
     session_start();
     $servername = "localhost";
@@ -46,7 +49,7 @@
             if (password_verify($password, $user['password'])) {
                 $_SESSION['username'] = $username; // Store username in session
                 $_SESSION['id'] = $user['id']; // Store user ID in session
-                header("Location: game.php");
+                header("Location: settings.php");
             } else {
                 echo "<p style='color:red;'>Invalid username or password. Please try again.</p>";
             }
