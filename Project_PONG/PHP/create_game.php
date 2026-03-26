@@ -29,6 +29,11 @@ $state = [
     "score2"=>$startScore2,
     "player2Joined"=>false
 ];
+
+// check if directory exists, if not create it
+if(!is_dir("../games")){
+    mkdir("../games", 0777, true);
+}
 // check if file already exists, if so generate a new ID
 while(file_exists("../games/$gameId.json")){
     $gameId = $maxgames;

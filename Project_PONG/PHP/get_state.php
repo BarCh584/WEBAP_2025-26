@@ -33,7 +33,7 @@ $state["ballY"] += $state["velY"];
 
 // top/bottom wall
 if ($state["ballY"] <= 0 || $state["ballY"] >= 590) {
-    $state["velY"] *= -1.02; // increase speed by 2% on each hit to make it more exciting over time
+    $state["velY"] *= -1.04; // increase speed by 2% on each hit to make it more exciting over time
 }
 
 // paddle 1 collision
@@ -42,7 +42,7 @@ if (
     $state["ballY"] >= $state["p1Y"] &&
     $state["ballY"] <= $state["p1Y"] + 100
 ) {
-    $state["velX"] *= -1.04; // increase speed by 4% on each hit to make it more exciting over time
+    $state["velX"] *= -1.08; // increase speed by 4% on each hit to make it more exciting over time
 }
 
 // paddle 2 collision
@@ -51,7 +51,7 @@ if (
     $state["ballY"] >= $state["p2Y"] &&
     $state["ballY"] <= $state["p2Y"] + 100
 ) {
-    $state["velX"] *= -1.04; // increase speed by 4% on each hit to make it more exciting over time
+    $state["velX"] *= -1.08; // increase speed by 4% on each hit to make it more exciting over time
 }
 
 // scoring
