@@ -18,27 +18,19 @@
 <body>
         <div class="card" id="hostCard">
             <h3>Host a Game</h3>
-
             <label>Goal number</label>
             <input type="text" id="goalInput" value="10">
-
             <label>Paddle speed P1</label>
             <input type="text" id="paddleSpeedInput1" value="250">
-
             <label>Paddle speed P2</label>
             <input type="text" id="paddleSpeedInput2" value="250">
-
             <label>Starting Score P1</label>
             <input type="text" id="startgoalscore1" value="0">
-
             <label>Starting Score P2</label>
             <input type="text" id="startgoalscore2" value="0">
-
             <button onclick="createGame()">Create Game</button>
         </div><br>
-
         <p id="gameid">Game ID: </p>
-
         <div class="card" id="joinCard">
             <h3>Join a Game</h3>
             <input type="text" id="gameIdInput" placeholder="Enter Game ID">
@@ -51,20 +43,16 @@
         let ctx = canvas.getContext("2d");
         let gameId = null;
         let playerNumber = null;
-
         const paddleHeight = 100;
         const paddleWidth = 10;
         const ballSize = 10;
-
         let upInterval = null;
         let downInterval = null;
-
         function hideForms() {
             document.querySelectorAll(".card").forEach(card => {
                 card.style.display = "none";
             });
         }
-
         function createGame() {
             let data = {
                 goal: document.getElementById("goalInput").value ?? 10,
@@ -75,7 +63,6 @@
                 startScore1: document.getElementById("startgoalscore1").value ?? 0,
                 startScore2: document.getElementById("startgoalscore2").value ?? 0
             };
-
             fetch("create_game.php", {
                 method: "POST",
                 headers: {
@@ -111,7 +98,6 @@
                 }
             });
         }
-
         document.addEventListener("keydown", function(e) {
             if (!gameId) return; // prevent game input before joining/creating
             if (e.key === "w" || e.key === "ArrowUp") {
@@ -120,7 +106,6 @@
                     upInterval = setInterval(() => sendInput("up"), 50);
                 }
             }
-
             if (e.key === "s" || e.key === "ArrowDown") {
                 if (!downInterval) {
                     sendInput("down");

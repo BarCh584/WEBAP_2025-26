@@ -38,8 +38,6 @@
                     password: $("#password").val()
                 }, 
                 function(response) {
-                    console.log("Response from server: " + response);
-
                     if (response.trim() === "success") {
                         window.location.href = "game.php";
                     } else {
