@@ -1,12 +1,4 @@
-<?php
-session_start();
-$gameId = $_GET["gameId"] ?? null;
-$playerNumber = $_GET["player"] ?? null;
-
-if (!$gameId || !$playerNumber) {
-    die("Invalid game.");
-}
-?>
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 
@@ -44,14 +36,14 @@ if (!$gameId || !$playerNumber) {
 
         <button onclick="createGame()">Create Game</button>
     </div>
+
     <p id="gameid">Game ID: </p>
+
     <div class="card" id="joinCard">
         <h3>Join a Game</h3>
-
         <input type="text" id="gameIdInput" placeholder="Enter Game ID">
         <button onclick="joinGame()">Join Game</button>
     </div>
-    <br><br>
     <canvas id="canvas" width="1200" height="600"></canvas>
     <script>
         let canvas = document.getElementById("canvas");
@@ -65,12 +57,11 @@ if (!$gameId || !$playerNumber) {
 
         let upInterval = null;
         let downInterval = null;
-        canvas.style.display = "none"; // hide canvas on load
 
         function hideForms() {
-            document.getElementById("hostCard").style.display = "none";
-            document.getElementById("joinCard").style.display = "none";
-            canvas.style.display = "block"; // load canvas when game starts
+            document.querySelectorAll(".card").forEach(card => {
+                card.style.display = "none";
+            });
         }
 
         function createGame() {
@@ -99,8 +90,7 @@ if (!$gameId || !$playerNumber) {
                     document.getElementById("gameid").innerText =
                         "Game Created. ID: " + gameId;
 
-                    // small delay ensures UI updates before hiding
-                    setTimeout(hideForms, 100);
+                    hideForms(); // ✅ hide for host
 
                     update();
                 });
@@ -115,7 +105,7 @@ if (!$gameId || !$playerNumber) {
                     if (data.status == "ok") {
                         gameId = id;
                         playerNumber = 2;
-                        document.getElementById("gameid").innerText = "Game Created. ID: " + gameId;
+
                         hideForms(); // ✅ hide for joiner
 
                         update();
@@ -127,12 +117,14 @@ if (!$gameId || !$playerNumber) {
 
         document.addEventListener("keydown", function(e) {
             if (!gameId) return;
+
             if (e.key === "w" || e.key === "ArrowUp") {
                 if (!upInterval) {
                     sendInput("up");
                     upInterval = setInterval(() => sendInput("up"), 50);
                 }
             }
+
             if (e.key === "s" || e.key === "ArrowDown") {
                 if (!downInterval) {
                     sendInput("down");
@@ -140,11 +132,13 @@ if (!$gameId || !$playerNumber) {
                 }
             }
         });
+
         document.addEventListener("keyup", function(e) {
             if (e.key === "w" || e.key === "ArrowUp") {
                 clearInterval(upInterval);
                 upInterval = null;
             }
+
             if (e.key === "s" || e.key === "ArrowDown") {
                 clearInterval(downInterval);
                 downInterval = null;

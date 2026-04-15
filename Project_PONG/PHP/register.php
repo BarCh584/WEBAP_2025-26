@@ -18,13 +18,10 @@
 <body>
     <form method="POST" class="card">
         <h3>Register</h3>
-
         <input type="text" name="username" placeholder="Username" required>
         <input type="password" name="password" placeholder="Password" required>
         <input type="password" name="confirm_password" placeholder="Confirm Password" required>
-
         <input type="submit" value="Create Account">
-
         <p>Already have an account? <a href="index.php">Login</a></p>
     </form>
     <?php
