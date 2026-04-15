@@ -16,37 +16,38 @@
 </head>
 
 <body>
-    <div class="card" id="hostCard">
-        <h3>Host a Game</h3>
+        <div class="card" id="hostCard">
+            <h3>Host a Game</h3>
 
-        <label>Goal number</label>
-        <input type="text" id="goalInput" value="10">
+            <label>Goal number</label>
+            <input type="text" id="goalInput" value="10">
 
-        <label>Paddle speed P1</label>
-        <input type="text" id="paddleSpeedInput1" value="250">
+            <label>Paddle speed P1</label>
+            <input type="text" id="paddleSpeedInput1" value="250">
 
-        <label>Paddle speed P2</label>
-        <input type="text" id="paddleSpeedInput2" value="250">
+            <label>Paddle speed P2</label>
+            <input type="text" id="paddleSpeedInput2" value="250">
 
-        <label>Starting Score P1</label>
-        <input type="text" id="startgoalscore1" value="0">
+            <label>Starting Score P1</label>
+            <input type="text" id="startgoalscore1" value="0">
 
-        <label>Starting Score P2</label>
-        <input type="text" id="startgoalscore2" value="0">
+            <label>Starting Score P2</label>
+            <input type="text" id="startgoalscore2" value="0">
 
-        <button onclick="createGame()">Create Game</button>
-    </div>
+            <button onclick="createGame()">Create Game</button>
+        </div><br>
 
-    <p id="gameid">Game ID: </p>
+        <p id="gameid">Game ID: </p>
 
-    <div class="card" id="joinCard">
-        <h3>Join a Game</h3>
-        <input type="text" id="gameIdInput" placeholder="Enter Game ID">
-        <button onclick="joinGame()">Join Game</button>
-    </div>
+        <div class="card" id="joinCard">
+            <h3>Join a Game</h3>
+            <input type="text" id="gameIdInput" placeholder="Enter Game ID">
+            <button onclick="joinGame()">Join Game</button>
+        </div>
     <canvas id="canvas" width="1200" height="600"></canvas>
     <script>
         let canvas = document.getElementById("canvas");
+        canvas.style.display = "none"; // hide canvas until game starts
         let ctx = canvas.getContext("2d");
         let gameId = null;
         let playerNumber = null;
@@ -76,48 +77,43 @@
             };
 
             fetch("create_game.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(res => res.json())
-                .then(data => {
-                    gameId = data.gameId;
-                    playerNumber = 1;
-
-                    document.getElementById("gameid").innerText =
-                        "Game Created. ID: " + gameId;
-
-                    hideForms(); // ✅ hide for host
-
-                    update();
-                });
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                gameId = data.gameId;
+                playerNumber = 1;
+                document.getElementById("gameid").innerText = "Game Created. ID: " + gameId;
+                canvas.style.display = "block"; // show canvas when game starts
+                hideForms();
+                update();
+            });
         }
-
         function joinGame() {
             let id = document.getElementById("gameIdInput").value;
 
             fetch("join_game.php?gameId=" + id)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status == "ok") {
-                        gameId = id;
-                        playerNumber = 2;
-
-                        hideForms(); // ✅ hide for joiner
-
-                        update();
-                    } else {
-                        alert("Unable to join.");
-                    }
-                });
+            .then(res => res.json())
+            .then(data => {
+                if (data.status == "ok") {
+                    gameId = id;
+                    playerNumber = 2;
+                    document.getElementById("gameid").innerText = "Joined Game. ID: " + gameId;
+                    canvas.style.display = "block"; // show canvas when game starts
+                    hideForms();
+                    update();
+                } else {
+                    alert("Unable to join.");
+                }
+            });
         }
 
         document.addEventListener("keydown", function(e) {
-            if (!gameId) return;
-
+            if (!gameId) return; // prevent game input before joining/creating
             if (e.key === "w" || e.key === "ArrowUp") {
                 if (!upInterval) {
                     sendInput("up");
