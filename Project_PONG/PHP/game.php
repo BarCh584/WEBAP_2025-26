@@ -16,26 +16,45 @@
 </head>
 
 <body>
-        <div class="card" id="hostCard">
-            <h3>Host a Game</h3>
-            <label>Goal number</label>
-            <input type="text" id="goalInput" value="10">
-            <label>Paddle speed P1</label>
-            <input type="text" id="paddleSpeedInput1" value="250">
-            <label>Paddle speed P2</label>
-            <input type="text" id="paddleSpeedInput2" value="250">
-            <label>Starting Score P1</label>
-            <input type="text" id="startgoalscore1" value="0">
-            <label>Starting Score P2</label>
-            <input type="text" id="startgoalscore2" value="0">
-            <button onclick="createGame()">Create Game</button>
-        </div><br>
-        <p id="gameid">Game ID: </p>
-        <div class="card" id="joinCard">
-            <h3>Join a Game</h3>
-            <input type="text" id="gameIdInput" placeholder="Enter Game ID">
-            <button onclick="joinGame()">Join Game</button>
-        </div>
+    <div class="card" id="hostCard">
+        <h3>Host a Game</h3>
+        <label>Goal number</label>
+        <input type="text" id="goalInput" value="10">
+        <label>Paddle speed P1</label>
+        <input type="text" id="paddleSpeedInput1" value="250">
+        <label>Paddle speed P2</label>
+        <input type="text" id="paddleSpeedInput2" value="250">
+        <label>Starting Score P1</label>
+        <input type="text" id="startgoalscore1" value="0">
+        <label>Starting Score P2</label>
+        <input type="text" id="startgoalscore2" value="0">
+        <button onclick="createGame()">Create Game</button>
+    </div><br>
+    <p id="gameid">Game ID: </p>
+    <div class="card" id="joinCard">
+        <h3>Join a Game</h3>
+        <input type="text" id="gameIdInput" placeholder="Enter Game ID">
+        <button onclick="joinGame()">Join Game</button>
+    </div>
+
+    <div id="gameslist">
+        <h3>Available Games</h3>
+        <button onclick="fetchGames()">Refresh Games</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Game ID</th>
+                    <th>Player 1</th>
+                    <th>Player 2</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="gamestable">
+            </tbody>
+        </table>
+    </div>
     <canvas id="canvas" width="1200" height="600"></canvas>
     <script>
         let canvas = document.getElementById("canvas");
@@ -48,11 +67,13 @@
         const ballSize = 10;
         let upInterval = null;
         let downInterval = null;
+
         function hideForms() {
             document.querySelectorAll(".card").forEach(card => {
                 card.style.display = "none";
             });
         }
+
         function createGame() {
             let data = {
                 goal: document.getElementById("goalInput").value ?? 10,
@@ -64,39 +85,40 @@
                 startScore2: document.getElementById("startgoalscore2").value ?? 0
             };
             fetch("create_game.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(data => {
-                gameId = data.gameId;
-                playerNumber = 1;
-                document.getElementById("gameid").innerText = "Game Created. ID: " + gameId;
-                canvas.style.display = "block"; // show canvas when game starts
-                hideForms();
-                update();
-            });
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    gameId = data.gameId;
+                    playerNumber = 1;
+                    document.getElementById("gameid").innerText = "Game Created. ID: " + gameId;
+                    canvas.style.display = "block"; // show canvas when game starts
+                    hideForms();
+                    update();
+                });
         }
+
         function joinGame() {
             let id = document.getElementById("gameIdInput").value;
 
             fetch("join_game.php?gameId=" + id)
-            .then(res => res.json())
-            .then(data => {
-                if (data.status == "ok") {
-                    gameId = id;
-                    playerNumber = 2;
-                    document.getElementById("gameid").innerText = "Joined Game. ID: " + gameId;
-                    canvas.style.display = "block"; // show canvas when game starts
-                    hideForms();
-                    update();
-                } else {
-                    alert("Unable to join.");
-                }
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status == "ok") {
+                        gameId = id;
+                        playerNumber = 2;
+                        document.getElementById("gameid").innerText = "Joined Game. ID: " + gameId;
+                        canvas.style.display = "block"; // show canvas when game starts
+                        hideForms();
+                        update();
+                    } else {
+                        alert("Unable to join.");
+                    }
+                });
         }
         document.addEventListener("keydown", function(e) {
             if (!gameId) return; // prevent game input before joining/creating
@@ -179,6 +201,14 @@
             for (let i = 0; i < canvas.height; i += 30) {
                 ctx.fillRect(canvas.width / 2, i, 2, 20);
             }
+        }
+
+        function fetchGames() {
+            fetch("fetch_games.php")
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById("gamestable").innerHTML = html;
+                });
         }
     </script>
 </body>

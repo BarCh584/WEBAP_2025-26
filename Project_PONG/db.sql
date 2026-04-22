@@ -11,12 +11,13 @@ CREATE TABLE Users (
 
 CREATE TABLE Games (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    score INT,
+    score VARCHAR(255),
     maxscore INT,
     gamestart DATETIME DEFAULT CURRENT_TIMESTAMP,
     gameend TIMESTAMP NULL,
     user1_id INT,
     user2_id INT,
+    status ENUM('waiting', 'ongoing', 'finished') DEFAULT 'waiting',
     FOREIGN KEY (user1_id) REFERENCES Users(id),
     FOREIGN KEY (user2_id) REFERENCES Users(id)
 ) ENGINE=InnoDB;
