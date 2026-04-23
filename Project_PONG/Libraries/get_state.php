@@ -1,12 +1,5 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "Ponggame";
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include "dbconn.php";
 $gameId = $_GET["gameId"];
 $file = "../games/$gameId.json";
 
@@ -57,6 +50,10 @@ if (
 // scoring
 if ($state["ballX"] < 0) {
     $state["score2"]++;
+    $score = $state["score1"] . " : " . $state["score2"];
+    $insertgoalscore2 = $conn->prepare("UPDATE games SET score=? WHERE id=?");
+    $insertgoalscore2->bind_param("si", $score, $gameId);
+    $insertgoalscore2->execute();
     if ($state["score2"] >= $state["goal"]) {
         echo "<script>alert('" . $state["p2N"] . " wins " . $state["score2"] . ":" . $state["score1"] . "');</script>";
         return;

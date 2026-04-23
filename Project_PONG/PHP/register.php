@@ -25,15 +25,7 @@
         <p>Already have an account? <a href="index.php">Login</a></p>
     </form>
     <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "Ponggame";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+    include "../Libraries/dbconn.php";
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = $_POST["username"];

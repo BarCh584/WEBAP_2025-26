@@ -15,9 +15,9 @@ CREATE TABLE Games (
     maxscore INT,
     gamestart DATETIME DEFAULT CURRENT_TIMESTAMP,
     gameend TIMESTAMP NULL,
-    user1_id INT,
-    user2_id INT,
+    user1 VARCHAR(255) NOT NULL,
+    user2 VARCHAR(255) NULL,
     status ENUM('waiting', 'ongoing', 'finished') DEFAULT 'waiting',
-    FOREIGN KEY (user1_id) REFERENCES Users(id),
-    FOREIGN KEY (user2_id) REFERENCES Users(id)
+    FOREIGN KEY (user1) REFERENCES Users(username),
+    FOREIGN KEY (user2) REFERENCES Users(username)
 ) ENGINE=InnoDB;

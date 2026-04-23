@@ -1,5 +1,5 @@
 <?php
-
+include "dbconn.php";
 $gameId = $_POST["gameId"];
 $player = $_POST["player"];
 $direction = $_POST["direction"];

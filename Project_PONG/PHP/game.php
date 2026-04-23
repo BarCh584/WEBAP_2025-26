@@ -20,10 +20,8 @@
         <h3>Host a Game</h3>
         <label>Goal number</label>
         <input type="text" id="goalInput" value="10">
-        <label>Paddle speed P1</label>
-        <input type="text" id="paddleSpeedInput1" value="250">
-        <label>Paddle speed P2</label>
-        <input type="text" id="paddleSpeedInput2" value="250">
+        <input type="hidden" id="paddleSpeedInput1" value="250">
+        <input type="hidden" id="paddleSpeedInput2" value="250">
         <label>Starting Score P1</label>
         <input type="text" id="startgoalscore1" value="0">
         <label>Starting Score P2</label>
@@ -35,25 +33,6 @@
         <h3>Join a Game</h3>
         <input type="text" id="gameIdInput" placeholder="Enter Game ID">
         <button onclick="joinGame()">Join Game</button>
-    </div>
-
-    <div id="gameslist">
-        <h3>Available Games</h3>
-        <button onclick="fetchGames()">Refresh Games</button>
-        <table>
-            <thead>
-                <tr>
-                    <th>Game ID</th>
-                    <th>Player 1</th>
-                    <th>Player 2</th>
-                    <th>Score</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="gamestable">
-            </tbody>
-        </table>
     </div>
     <canvas id="canvas" width="1200" height="600"></canvas>
     <script>
@@ -84,7 +63,7 @@
                 startScore1: document.getElementById("startgoalscore1").value ?? 0,
                 startScore2: document.getElementById("startgoalscore2").value ?? 0
             };
-            fetch("create_game.php", {
+            fetch("../Libraries/create_game.php", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -105,7 +84,7 @@
         function joinGame() {
             let id = document.getElementById("gameIdInput").value;
 
-            fetch("join_game.php?gameId=" + id)
+            fetch("../Libraries/join_game.php?gameId=" + id)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status == "ok") {
@@ -149,7 +128,7 @@
         });
 
         function sendInput(direction) {
-            fetch("update_input.php", {
+            fetch("../Libraries/update_input.php", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
@@ -165,7 +144,7 @@
         }
 
         function fetchState() {
-            fetch("get_state.php?gameId=" + gameId)
+            fetch("../Libraries/get_state.php?gameId=" + gameId)
                 .then(res => res.json())
                 .then(data => {
                     ballX = data.ballX;
@@ -176,7 +155,6 @@
                     p2N = data.p2N;
                     score1 = data.score1;
                     score2 = data.score2;
-
                     draw();
                 });
         }
@@ -203,13 +181,6 @@
             }
         }
 
-        function fetchGames() {
-            fetch("fetch_games.php")
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById("gamestable").innerHTML = html;
-                });
-        }
     </script>
 </body>
 

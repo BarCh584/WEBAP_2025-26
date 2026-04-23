@@ -46,12 +46,12 @@ while(file_exists("../games/$gameId.json")){
 }
 
 // create db entry for the game
-$insertgamestmt = $conn->prepare("INSERT INTO games (id, user1_id, user2_id, score, status) VALUES (?, ?, ?, ?, ?)");
-$user1_id = $_SESSION["id"] ?? null; // store player 1's user ID in the database, not the name
-$user2_id = null; // player 2 ID cannot be set at game creation, it will be set when player 2 joins
+$insertgamestmt = $conn->prepare("INSERT INTO games (id, user1, user2, score, status) VALUES (?, ?, ?, ?, ?)");
+$user1 = $_SESSION["username"] ?? null; // store player 1's user ID in the database, not the name
+$user2 = null; // player 2 ID cannot be set at game creation, it will be set when player 2 joins
 $score = $startScore1 . " : " . $startScore2;
 $status = "waiting";
-$insertgamestmt->bind_param("issis", $gameId, $user1_id, $user2_id, $score, $status);
+$insertgamestmt->bind_param("issss", $gameId, $user1, $user2, $score, $status);
 $insertgamestmt->execute();
 // create the file
 file_put_contents("../games/$gameId.json", json_encode($state));
