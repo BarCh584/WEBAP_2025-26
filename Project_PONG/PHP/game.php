@@ -75,7 +75,8 @@
                     gameId = data.gameId;
                     playerNumber = 1;
                     goalnumber = document.getElementById("goalInput").value;
-                    document.getElementById("gameid").innerText = "Game Created. Game ID: " + gameId + "\n Play until " + goalnumber + " goals to win!";
+                    goalword = goalnumber == 1 ? "goal" : "goals";
+                    document.getElementById("gameid").innerText = "Game Created. Game ID: " + gameId + "\n Play until " + goalnumber + " " + goalword + " to win!";
                     canvas.style.display = "block"; // show canvas when game starts
                     hideForms();
                     update();
@@ -181,10 +182,25 @@
             for (let i = 0; i < canvas.height; i += 30) {
                 ctx.fillRect(canvas.width / 2, i, 2, 20);
             }
-            if (score1 >= goal) {
-                ctx.fillText(p1N + "      wins!", 550, 30);
-            } else if (score2 >= goal) {
-                ctx.fillText(p2N + "      wins!", 550, 30);
+            if (score1 >= goal || score2 >= goal) {
+                let winner = score1 >= goal ? p1N : p2N;
+                // Dark transparent overlay
+                ctx.fillStyle = "rgba(0,0,0,0.75)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // Winner text glow
+                ctx.fillStyle = "#00ff99";
+                ctx.font = "bold 60px Arial";
+                ctx.textAlign = "center";
+                ctx.shadowColor = "#00ff99";
+                ctx.shadowBlur = 20;
+                ctx.fillText(winner + " WINS!", canvas.width / 2, canvas.height / 2);
+                // Smaller subtitle
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = "white";
+                ctx.font = "24px Arial";
+                ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 + 50);
+                // Reset align
+                ctx.textAlign = "left";
             }
         }
     </script>
