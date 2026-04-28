@@ -62,7 +62,8 @@ if ($state["ballX"] < 0) {
         $statusstmt = $conn->prepare("UPDATE games SET status='finished' WHERE id=?");
         $statusstmt->bind_param("i", $gameId);
         $statusstmt->execute();
-        return;
+        echo json_encode($state);
+        exit;
     }
     $state["ballX"] = 600;
     $state["ballY"] = 300;
@@ -77,13 +78,14 @@ if ($state["ballX"] > 1200) {
     $insertgoalscore1->bind_param("si", $score, $gameId);
     $insertgoalscore1->execute();
     if ($state["score1"] >= $state["goal"]) {
-        $insertendtimestmt = $conn->prepare("UPDATE games SET end_time=NOW() WHERE id=?");
+        $insertendtimestmt = $conn->prepare("UPDATE games SET gameend=NOW() WHERE id=?");
         $insertendtimestmt->bind_param("i", $gameId);
         $insertendtimestmt->execute();
         $statusstmt = $conn->prepare("UPDATE games SET status='finished' WHERE id=?");
         $statusstmt->bind_param("i", $gameId);
         $statusstmt->execute();
-        return;
+        echo json_encode($state);
+        exit;
     }
     $state["ballX"] = 600;
     $state["ballY"] = 300;

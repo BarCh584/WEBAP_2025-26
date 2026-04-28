@@ -74,7 +74,8 @@
                 .then(data => {
                     gameId = data.gameId;
                     playerNumber = 1;
-                    document.getElementById("gameid").innerText = "Game Created. ID: " + gameId;
+                    goalnumber = document.getElementById("goalInput").value;
+                    document.getElementById("gameid").innerText = "Game Created. Game ID: " + gameId + "\n Play until " + goalnumber + " goals to win!";
                     canvas.style.display = "block"; // show canvas when game starts
                     hideForms();
                     update();
@@ -181,9 +182,9 @@
                 ctx.fillRect(canvas.width / 2, i, 2, 20);
             }
             if (score1 >= goal) {
-                ctx.fillText(p1N + " wins!", 550, 300);
+                ctx.fillText(p1N + "      wins!", 550, 30);
             } else if (score2 >= goal) {
-                ctx.fillText(p2N + " wins!", 550, 300);
+                ctx.fillText(p2N + "      wins!", 550, 30);
             }
         }
     </script>
