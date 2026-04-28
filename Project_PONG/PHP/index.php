@@ -32,18 +32,17 @@
             // check if form was submitted 
             $("#submit").click(function(event) {
                 event.preventDefault();
-                $.post("../Libraries/formrequest.php", 
-                {
-                    username: $("#username").val(),
-                    password: $("#password").val()
-                }, 
-                function(response) {
-                    if (response.trim() === "success") {
-                        window.location.href = "game.php";
-                    } else {
-                        $("#response").text(response);
-                    }
-                });
+                $.post("../Libraries/formrequest.php", {
+                        username: $("#username").val(),
+                        password: $("#password").val()
+                    },
+                    function(response) {
+                        if (response.trim() === "success") {
+                            window.location.href = "game.php";
+                        } else {
+                            $("#response").text(response);
+                        }
+                    });
             });
         });
     </script>

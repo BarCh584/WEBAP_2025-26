@@ -55,7 +55,13 @@ if ($state["ballX"] < 0) {
     $insertgoalscore2->bind_param("si", $score, $gameId);
     $insertgoalscore2->execute();
     if ($state["score2"] >= $state["goal"]) {
-        echo "<script>alert('" . $state["p2N"] . " wins " . $state["score2"] . ":" . $state["score1"] . "');</script>";
+        // Player 2 wins
+        $insertendtimestmt = $conn->prepare("UPDATE games SET gameend=NOW() WHERE id=?");
+        $insertendtimestmt->bind_param("i", $gameId);
+        $insertendtimestmt->execute();
+        $statusstmt = $conn->prepare("UPDATE games SET status='finished' WHERE id=?");
+        $statusstmt->bind_param("i", $gameId);
+        $statusstmt->execute();
         return;
     }
     $state["ballX"] = 600;
@@ -66,8 +72,17 @@ if ($state["ballX"] < 0) {
 
 if ($state["ballX"] > 1200) {
     $state["score1"]++;
+    $score = $state["score1"] . " : " . $state["score2"];
+    $insertgoalscore1 = $conn->prepare("UPDATE games SET score=? WHERE id=?");
+    $insertgoalscore1->bind_param("si", $score, $gameId);
+    $insertgoalscore1->execute();
     if ($state["score1"] >= $state["goal"]) {
-        echo "<script>alert('" . $state["p1N"] . " wins " . $state["score1"] . ":" . $state["score2"] . "');</script>";
+        $insertendtimestmt = $conn->prepare("UPDATE games SET end_time=NOW() WHERE id=?");
+        $insertendtimestmt->bind_param("i", $gameId);
+        $insertendtimestmt->execute();
+        $statusstmt = $conn->prepare("UPDATE games SET status='finished' WHERE id=?");
+        $statusstmt->bind_param("i", $gameId);
+        $statusstmt->execute();
         return;
     }
     $state["ballX"] = 600;

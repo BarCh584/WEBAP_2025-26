@@ -155,6 +155,7 @@
                     p2N = data.p2N;
                     score1 = data.score1;
                     score2 = data.score2;
+                    goal = data.goal;
                     draw();
                 });
         }
@@ -179,8 +180,12 @@
             for (let i = 0; i < canvas.height; i += 30) {
                 ctx.fillRect(canvas.width / 2, i, 2, 20);
             }
+            if (score1 >= goal) {
+                ctx.fillText(p1N + " wins!", 550, 300);
+            } else if (score2 >= goal) {
+                ctx.fillText(p2N + " wins!", 550, 300);
+            }
         }
-
     </script>
 </body>
 
