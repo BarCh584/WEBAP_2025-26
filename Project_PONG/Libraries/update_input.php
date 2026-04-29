@@ -33,9 +33,9 @@ if($player == 2){
 }
 
 // write updated state
-ftruncate($fp, 0);
-rewind($fp);
-fwrite($fp, json_encode($state));
-fflush($fp);
-flock($fp, LOCK_UN);
+ftruncate($fp, 0); // clear file before writing updated state
+rewind($fp); // pointer to the beginning of the file
+fwrite($fp, json_encode($state)); // write updated state back to file
+fflush($fp); // really store data to file (not just in memory)
+flock($fp, LOCK_UN); // release lock
 fclose($fp);
