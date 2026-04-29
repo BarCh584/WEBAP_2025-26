@@ -92,7 +92,9 @@
                     if (data.status == "ok") {
                         gameId = id;
                         playerNumber = 2;
-                        document.getElementById("gameid").innerText = "Joined Game. ID: " + gameId;
+                        goalnumber = data.goal;
+                        goalword = goalnumber == 1 ? "goal" : "goals";
+                        document.getElementById("gameid").innerText = "Joined Game. ID: " + gameId + "\n Play until " + goalnumber + " " + goalword + " to win!";
                         canvas.style.display = "block"; // show canvas when game starts
                         hideForms();
                         update();
